@@ -3,9 +3,6 @@ import json
 import ccxt
 import paho.mqtt.client as mqtt
 
-# cryptodata = {}
-# totalfiat = 0
-
 def on_connect(client, userdata, flags, rc):
  client.subscribe("crypto/read/agent/#")
 
@@ -73,7 +70,6 @@ def readcrypto(client, userdata, msg):
   transmitdata['fiat_amount'] = data[1]['fiat']
   transmitdata['informationtyp'] = data[1]['informationtyp']
   transmitdata['source'] = data[1]['source']
-  # print transmitdata
   client.publish("crypto/write/agent", json.dumps(transmitdata))
  
 client = mqtt.Client()
