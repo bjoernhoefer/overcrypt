@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitor cryptocurrencies via MQTT
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+ExecStart=/usr/bin/python2 /opt/overcrypt/main.py
+
+[Install]
+WantedBy=multi-user.target
