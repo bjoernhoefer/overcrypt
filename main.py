@@ -58,8 +58,6 @@ def readcrypto(client, userdata, msg):
        cryptodata[key]['source'] = exchange
       totalfiat += amount
 
-# print totalfiat
- 
  totaldata = {}
  totaldata['amount'] = totalfiat
  totaldata['currency'] = "EUR"
@@ -86,5 +84,3 @@ client.message_callback_add('crypto/read/agent', readcrypto)
 client.connect("mqtt", 1883, 60)
 
 client.loop_forever()
-
-
