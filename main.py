@@ -39,8 +39,11 @@ def readcrypto(client, userdata, msg):
        rate=api.fetch_ticker(key+"/EUR")
        amount = rate['last']*value
       elif exchange == "bitfinex":
-       btcamount=float(api.fetch_ticker(key+"/BTC")['info']['last_price'])
-       btcvalue=btcamount * value
+       if key != 'BTC':
+        btcamount=float(api.fetch_ticker(key+"/BTC")['info']['last_price'])
+        btcvalue=btcamount * value
+       else:
+        btcvalue=value
        amount=btcvalue * btceuro
       if key in cryptodata:
        cryptodata[key]['amount'] += value 
