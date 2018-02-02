@@ -25,18 +25,23 @@ def readcrypto(client, userdata, msg):
     print "Exchange: " + exchange
    fullpath = root+'/'+filename
    apidata = json.load(open(fullpath))
- 
+
+### Kraken 
    if exchange == "kraken":
     api = ccxt.kraken({
      'apiKey': apidata["apiKey"],
      'secret': apidata["secret"]
     })
+
+### Bitfinex
    elif exchange == "bitfinex":
     api = ccxt.bitfinex({
      'apiKey': apidata["apiKey"],
      'secret': apidata["secret"]
     })
     btceuro=float(api.fetch_ticker('BTC/EUR')['info']['last_price'])
+
+### Binance
    elif exchange == "binance":
     api = ccxt.binance({
      'apiKey': apidata["apiKey"],
@@ -44,11 +49,20 @@ def readcrypto(client, userdata, msg):
     })
     c = CurrencyRates()
     dollarrate = c.get_rate('USD', 'EUR')
+
+### Poloinex
+   elif exchange == "poloniex":
+    api = ccxt.poloniex({
+     'apiKey': apidata["apiKey"],
+     'secret': apidata["secret"]
+    })
+    c = CurrencyRates()
+    exchange_rate = c.get_rate('USD', 'EUR')
+    
    else:
     print "currently not supported exchange - feel free to implement it"
 
-   
-
+## Fetch Balance
    balance=api.fetch_balance()
    balance_total=balance['total']
    for key,value in balance_total.iteritems():
@@ -56,9 +70,14 @@ def readcrypto(client, userdata, msg):
      if devon:
       print key," ",value
      if key != 'EUR':
+
+## Calculation time...
+### Kraken
       if exchange == "kraken":
        rate=api.fetch_ticker(key+"/EUR")
        amount = rate['last']*value
+
+### Bitfinex
       elif exchange == "bitfinex":
        if key != 'BTC':
         btcamount=float(api.fetch_ticker(key+"/BTC")['info']['last_price'])
@@ -67,6 +86,7 @@ def readcrypto(client, userdata, msg):
         btcvalue=value
        amount=btcvalue * btceuro
 
+### Binance
       elif exchange == "binance":
        if key == 'ETH':
         fiat_direct = True
@@ -85,17 +105,79 @@ def readcrypto(client, userdata, msg):
          print "FIAT direct - EUR: ",amount
        else:
         btcamount=float(api.fetch_ticker(key+"/BTC")['info']['lastPrice'])
+        if devon:
+         print "BTC Amount: ", btcamount
         rate=float(api.fetch_ticker("BTC/USDT")['info']['lastPrice'])
+        if devon:
+         print "Rate: ", rate
         dollaramount = rate * btcamount
         amount = dollaramount * dollarrate
-       
-       eurovalue = amount * dollarrate
        
        if devon:
         print "Amount in USD: ",dollaramount
         print "1 Dollar in Euro: ",dollarrate
         print "Amount in Euro: ", amount
 
+### Poloniex
+      elif exchange == "poloniex":
+       if devon:
+        print "Calculation - Poloniex"
+
+       exchange_currency = "USDT"
+
+       if key == 'ETH':
+        fiat_direct = True
+       if key == 'BTC':
+        fiat_direct = True
+       if key == 'XRP':
+        fiat_direct = True
+       if key == 'LTC':
+        fiat_direct = True
+       if key == 'STR':
+        fiat_direct = True
+       if key == 'LTC':
+        fiat_direct = True
+       if key == 'BCH':
+        fiat_direct = True
+       if key == 'ETC':
+        fiat_direct = True
+       if key == 'ZEC':
+        fiat_direct = True
+       if key == 'DASH':
+        fiat_direct = True
+       if key == 'XMR':
+        fiat_direct = True
+       if key == 'NXT':
+        fiat_direct = True
+       if key == 'REP':
+        fiat_direct = True
+       else:
+        fiat_direct = False
+       
+       if fiat_direct:
+        if devon:
+         print "Direct convertable"
+        rate = float(api.markets[key+"/"+exchange_currency]['info']['last'])
+        exchange_amount = rate * value
+        amount = exchange_amount + exchange_rate
+        if devon:
+         print value, " ", key, " - amount: ", amount
+
+       else:
+        if devon:
+         print "Non direct convertable"
+        btcamount=float(api.markets[key+"/BTC"]['info']['last'])
+        rate=float(api.markets["BTC/USDT"]['info']['last'])
+        exchange_amount = rate * btcamount
+        if devon:
+         print "exchange_amount: ", exchange_amount
+         print "exchange_rate: ", exchange_rate
+        amount = (exchange_amount * exchange_rate) * value
+        if devon:
+         print value, " ", key, " - amount: ", amount
+
+
+## Create Transaction-Data
       if key in cryptodata:
        cryptodata[key]['amount'] += value 
        cryptodata[key]['fiat'] += amount
