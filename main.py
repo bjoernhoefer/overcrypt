@@ -127,34 +127,34 @@ def readcrypto(client, userdata, msg):
 
        if key == 'ETH':
         fiat_direct = True
-       if key == 'BTC':
+       elif key == 'BTC':
         fiat_direct = True
-       if key == 'XRP':
+       elif key == 'XRP':
         fiat_direct = True
-       if key == 'LTC':
+       elif key == 'LTC':
         fiat_direct = True
-       if key == 'STR':
+       elif key == 'STR':
         fiat_direct = True
-       if key == 'LTC':
+       elif key == 'LTC':
         fiat_direct = True
-       if key == 'BCH':
+       elif key == 'BCH':
         fiat_direct = True
-       if key == 'ETC':
+       elif key == 'ETC':
         fiat_direct = True
-       if key == 'ZEC':
+       elif key == 'ZEC':
         fiat_direct = True
-       if key == 'DASH':
+       elif key == 'DASH':
         fiat_direct = True
-       if key == 'XMR':
+       elif key == 'XMR':
         fiat_direct = True
-       if key == 'NXT':
+       elif key == 'NXT':
         fiat_direct = True
-       if key == 'REP':
+       elif key == 'REP':
         fiat_direct = True
        else:
         fiat_direct = False
        
-       if fiat_direct:
+       if fiat_direct :
         if devon:
          print "Direct convertable"
         rate = float(api.markets[key+"/"+exchange_currency]['info']['last'])
